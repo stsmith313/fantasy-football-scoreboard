@@ -26,71 +26,45 @@ class ESPNFantasyInfo():
         self.matchup = self.get_matchup()
         return self.matchup
 
-    def get_matchup(self):
-        print('getting matchup')
-        matchup_info = {}
-        try:
-            url = '{0}/{1}/segments/0/leagues/{2}'.format(
-                API_URL, self.year, self.league_id)
-            matchups = requests.get(url, cookies=self.cookies, params={"view": "mBoxscore"}).json()
-            for matchup in matchups['schedule']:
-                if int(matchup['matchupPeriodId']) != self.week:
-                    continue
-                if int(matchup['home']['teamId']) == self.team_id:
-                    matchup_info['user_name'] = next(
-                        (item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['team']
-                    matchup_info['user_av'] = next((item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))[
-                        'avatar'].split("/")[-1].replace('.svg', '.png')
-                    matchup_info['user_team'] = next(
-                        (item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['owner']
-                    if 'pointsByScoringPeriod' in matchup['home']:
-                        matchup_info['user_score'] = float(matchup['home']['pointsByScoringPeriod'].get(str(self.week), 0))
-                    else:
-                        matchup_info['user_score'] = float(
-                            matchup['home'].get('rosterForCurrentScoringPeriod', {}).get('appliedStatTotal', 0))
-                    matchup_info['opp_name'] = next(
-                        (item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['team']
-                    matchup_info['opp_av'] = next((item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))[
-                        'avatar'].split("/")[-1].replace('.svg', '.png')
-                    matchup_info['opp_team'] = next(
-                        (item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['owner']
-                    if 'pointsByScoringPeriod' in matchup['away']:
-                        matchup_info['opp_score'] = float(matchup['away']['pointsByScoringPeriod'].get(str(self.week), 0))
-                    else:
-                        matchup_info['opp_score'] = float(
-                            matchup['away'].get('rosterForCurrentScoringPeriod', {}).get('appliedStatTotal', 0))
-                elif int(matchup['away']['teamId']) == self.team_id:
-                    matchup_info['user_name'] = next(
-                        (item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['team']
-                    matchup_info['user_av'] = next((item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))[
-                        'avatar'].split("/")[-1].replace('.svg', '.png')
-                    matchup_info['user_team'] = next(
-                        (item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['owner']
-                    if 'pointsByScoringPeriod' in matchup['away']:
-                        matchup_info['user_score'] = float(matchup['away']['pointsByScoringPeriod'].get(str(self.week), 0))
-                    else:
-                        matchup_info['user_score'] = float(
-                            matchup['away'].get('rosterForCurrentScoringPeriod', {}).get('appliedStatTotal', 0))
-                    matchup_info['opp_name'] = next(
-                        (item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['team']
-                    matchup_info['opp_av'] = next((item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))[
-                        'avatar'].split("/")[-1].replace('.svg', '.png')
-                    matchup_info['opp_team'] = next(
-                        (item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['owner']
-                    if 'pointsByScoringPeriod' in matchup['home']:
-                        matchup_info['opp_score'] = float(matchup['home']['pointsByScoringPeriod'].get(str(self.week), 0))
-                    else:
-                        matchup_info['opp_score'] = float(
-                            matchup['home'].get('rosterForCurrentScoringPeriod', {}).get('appliedStatTotal', 0))
-            return matchup_info
-        except requests.exceptions.RequestException as e:
-            print("Error encountered. Can't reach ESPN API:", e)
-            return matchup_info
-        except IndexError:
-            print("ESPN API Index Error in get_matchup")
-            return matchup_info
-        except Exception as e:
-            print("ESPN API Error in get_matchup:", e)
+    def get_all_matchups(self):
+    print('getting all matchups')
+    all_matchups = []
+    try:
+        url = '{0}/{1}/segments/0/leagues/{2}'.format(API_URL, self.year, self.league_id)
+        matchups = requests.get(url, cookies=self.cookies, params={"view": "mBoxscore"}).json()
+        for matchup in matchups['schedule']:
+            if int(matchup['matchupPeriodId']) != self.week:
+                continue
+            matchup_info = {}
+            if int(matchup['home']['teamId']) == self.team_id:
+                matchup_info['user_name'] = next((item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['team']
+                matchup_info['user_av'] = next((item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['avatar'].split("/")[-1].replace('.svg', '.png')
+                matchup_info['user_team'] = next((item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['owner']
+                matchup_info['user_score'] = float(matchup['home']['pointsByScoringPeriod'].get(str(self.week), 0))
+                matchup_info['opp_name'] = next((item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['team']
+                matchup_info['opp_av'] = next((item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['avatar'].split("/")[-1].replace('.svg', '.png')
+                matchup_info['opp_team'] = next((item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['owner']
+                matchup_info['opp_score'] = float(matchup['away']['pointsByScoringPeriod'].get(str(self.week), 0))
+            elif int(matchup['away']['teamId']) == self.team_id:
+                matchup_info['user_name'] = next((item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['team']
+                matchup_info['user_av'] = next((item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['avatar'].split("/")[-1].replace('.svg', '.png')
+                matchup_info['user_team'] = next((item for item in self.teams_info if item['team_id'] == matchup['away']['teamId']))['owner']
+                matchup_info['user_score'] = float(matchup['away']['pointsByScoringPeriod'].get(str(self.week), 0))
+                matchup_info['opp_name'] = next((item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['team']
+                matchup_info['opp_av'] = next((item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['avatar'].split("/")[-1].replace('.svg', '.png')
+                matchup_info['opp_team'] = next((item for item in self.teams_info if item['team_id'] == matchup['home']['teamId']))['owner']
+                matchup_info['opp_score'] = float(matchup['home']['pointsByScoringPeriod'].get(str(self.week), 0))
+            all_matchups.append(matchup_info)
+        return all_matchups
+    except requests.exceptions.RequestException as e:
+        print("Error encountered. Can't reach ESPN API:", e)
+    except KeyError:
+        print("KeyError encountered while retrieving matchup data")
+    except IndexError:
+        print("IndexError encountered while retrieving matchup data")
+    except Exception as e:
+        print("An error occurred while retrieving matchup data:", e)
+    return all_matchups
 
     def get_teams(self):
     	print('getting teams')
