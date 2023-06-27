@@ -26,7 +26,7 @@ class ESPNFantasyInfo():
         self.matchup = self.get_matchup()
         return self.matchup
 
-    def get_all_matchups(self):
+    def get_matchup(self):
         print('getting all matchups')
         matchup_info = []
         try:
