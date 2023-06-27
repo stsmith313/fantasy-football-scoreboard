@@ -1,0 +1,22 @@
+{
+    "platform": "espn",
+    "espn":{
+        "league_id": "467985",
+        "team_id": "11",
+        "swid": "",
+        "espn_s2": ""
+    },
+    "sleeper": {
+        "league_id": "",
+        "user_id": ""
+    },
+    "yahoo":{
+        "consumer_key": "",
+        "consumer_secret": "",
+        "team_id": "",
+        "league_id": "",
+        "game_id": "414"
+    },
+    "debug": false,
+    "testing": false
+}
